@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import { createSecureContext } from 'tls';
 
 
+/*-------- SQUARE --------*/
 function Square(props){//Function Component
   return (
     <button className="square" onClick={() => props.onClick()}>
@@ -12,7 +14,7 @@ function Square(props){//Function Component
 }
   
   
-
+/*-------- BOARD --------*/
   class Board extends React.Component {
     constructor(props){
       super(props);
@@ -21,38 +23,17 @@ function Square(props){//Function Component
         xIsNext: true,//First move to be "X" by default
       };
     }
-    
-    //Storing the state in the Board component instead of the individual Square components
-    handleClick(i){//Handle click function
-      const squares = this.state.squares.slice();//Call .slice() to create copy of the squares array to modify.
-      if (calculateWinner(squares) || squares[i]) {//Ignore a click if s.o has won the game.
-        return;
-      }
-      squares[i] = this.state.xIsNext ? 'X' : 'O';
-      this.setState({
-        squares: squares,
-        xIsNext: !this.state.xIsNext,//Flip the xIsNext boolean.
-      });
-    }
 
     renderSquare(i) {
       return (
       <Square 
-        value={this.state.squares[i]}
-        onClick={() => this.handleClick(i)}
+        value={this.props.squares[i]}
+        onClick={() => this.props.onClick(i)}
         />
       );
     }
   
     render() {
-      const winner = calculateWinner(this.state.squares);
-      let status;
-      if(winner){
-        status = 'Winner: ' +winner;
-      } else{
-        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');//Show next player
-      }
-
       return (
         <div>
           <div className="status">{status}</div>
@@ -76,15 +57,57 @@ function Square(props){//Function Component
     }
   }
   
+  /*-------- GAME --------*/
   class Game extends React.Component {
+    constructor(props){
+      super(props);
+      this.state ={
+        history: [{
+          squares : Array(9).fill(null),
+        }],
+        xIsNext:true,
+      };
+    }
+    
+    //Storing the state in the GAME component instead of the individual Square components
+    handleClick(i){//Handle click function
+      const history = this.state.history;
+      const current = history[history.length - 1];
+      const squares = current.squares.slice();
+      if (calculateWinner(squares) || squares[i]) {//Ignore a click if s.o has won the game.
+        return;
+      }
+      squares[i] = this.state.xIsNext ? 'X' : 'O';
+      this.setState({
+        history:history.concat,([{//Concat method doesn't mutate the original array . Which better than push() method.
+          squares:squares,
+        }])
+        xIsNext: !this.state.xIsNext,//Flip the xIsNext boolean.
+      });
+    }
+
     render() {
+      const history = this.state.history;
+      const current = history[history.length - 1];
+      const winner = calculateWinner(current.squares);
+
+      let status;
+      if (winner) {
+        status = 'Winner: ' + winner;
+      } else {
+        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+      }
+
       return (
         <div className="game">
           <div className="game-board">
-            <Board />
+            <Board 
+            squares={current.squares}
+            onClick={(i) => this.handleClick(i)}
+            />
           </div>
           <div className="game-info">
-            <div>{/* status */}</div>
+            <div>{status}</div>
             <ol>{/* TODO */}</ol>
           </div>
         </div>
@@ -92,7 +115,6 @@ function Square(props){//Function Component
     }
   }
   
-  // ========================================
   
   ReactDOM.render(
     <Game />,
