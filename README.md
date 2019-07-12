@@ -4,8 +4,7 @@
   cd ReactTutorial 
   npm start 
   ```
-<br/>
-<br/>
-**HOW TO TEST : <br>**
+
+**HOW TO TEST :**
  
  ```npm test```
