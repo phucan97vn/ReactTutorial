@@ -82,6 +82,7 @@ function Square(props){//Function Component
       this.setState({
         history:history.concat([{//Concat method doesn't mutate the original array . Which better than push() method.
           squares:squares,
+          lastMovePosition:i
         }]),
         stepNumber : history.length,
         xIsNext: !this.state.xIsNext,//Flip the xIsNext boolean.
@@ -102,8 +103,11 @@ function Square(props){//Function Component
       const winner = calculateWinner(current.squares);
       
       const moves = history.map((step, move) => {
+        const lastMovePosition = step.lastMovePosition;
+        const col = 1 + Math.floor(lastMovePosition/3);
+        const row = 1 + lastMovePosition%3;
         const desc = move ?
-          'Go to move #' + move :
+          'Go to move #' + move + "(Col:"+col+",Row:"+row+")":
           'Go to game start';
         return (
           //Move is an unique ID 
