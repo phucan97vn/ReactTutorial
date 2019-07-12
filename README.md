@@ -1,8 +1,8 @@
 **HOW TO RUN :<br>**
   Install newest version of node.js<br>
   ``
-  cd ReactTutorial
-  npm start
+  cd ReactTutorial 
+  npm start 
   ``
 <br/>
 <br/>
